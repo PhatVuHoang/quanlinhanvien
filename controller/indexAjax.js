@@ -50,6 +50,21 @@ var kiemTra = function () {
   }
 };
 
+var renderNhanVien = function () {
+  var promise = axios({
+    url: "http://svcy.myclass.vn/api/QuanLyNhanVienApi/LayDanhSachNhanVien",
+    method: "GET",
+    responseType: "json",
+  });
+  promise.then(function (result) {
+    console.log("result", result.data);
+    renderTableNhanVien(result.data);
+  });
+  promise.catch(function (error) {
+    console.log(error);
+  });
+};
+
 var renderTableNhanVien = function (arrNhanVien) {
   var content = "";
   for (var i = 0; i < arrNhanVien.length; i++) {
@@ -62,73 +77,60 @@ var renderTableNhanVien = function (arrNhanVien) {
       nhanVien.luongCoBan,
       nhanVien.soGioLamTrongThang
     );
-    content = `
+
+    content += `
         <tr>
-            <td>${nv.maNhanVien}</td>
-            <td>${nv.tenNhanVien}</td>
-            <td>${nv.chucVu}</td>
-            <td>${nv.luongCoBan}</td>
-            <td>${nv.luongNhanVien()}</td>
-            <td>${nv.soGioLamTrongThang}</td>
-            <td>${nv.xepLoaiNhanVien()}</td>
-            <td>
-                <button class="btn btn-danger" onclick="xoaNhanVien('${
-                  nv.maNhanVien
-                }')">Xóa</button>
-                <button class="btn btn-primary" id="capNhatNhanVien" onclick="chinhSuaNhanVien('${
-                  nv.maNhanVien
-                }')">Cập nhật</button>
-            </td>
+        <td>${nv.maNhanVien}</td>
+        <td>${nv.tenNhanVien}</td>
+        <td>${nv.chucVu}</td>
+        <td>${nv.luongCoBan}</td>
+        <td>${nv.luongNhanVien()}</td>
+        <td>${nv.soGioLamTrongThang}</td>
+        <td>${nv.xepLoaiNhanVien()}</td>
+        <td>
+        <button class="btn btn-danger" onclick="xoaNhanVien('${
+          nv.maNhanVien
+        }')">Xóa</button>
+        <button class="btn btn-danger" onclick="chinhSua('${
+          nv.maNhanVien
+        }')">Chỉnh sửa</button>
+        </td>
         </tr>
         `;
   }
   document.querySelector("#tblNhanVien").innerHTML = content;
 };
 
-var renderNhanVien = function () {
-  var promise = axios({
-    url: "http://svcy.myclass.vn/api/QuanLyNhanVienApi/LayDanhSachNhanVien",
-    method: "GET",
-    responseType: "json",
-  });
-  promise.then(function (result) {
-    renderTableNhanVien(result.data);
-  });
-  promise.catch(function (error) {
-    console.log(error);
-  });
-};
-
 renderNhanVien();
 
 document.querySelector("#btnXacNhan").onclick = function () {
-        var nhanVien = new NhanVien();
-        nhanVien.maNhanVien = document.querySelector("#txtMaNhanVien").value;
-        nhanVien.tenNhanVien = document.querySelector("#txtTenNhanVien").value;
-        nhanVien.heSoChucVu = document.querySelector("#chucVu").value;
-        nhanVien.soGioLamTrongThang = document.querySelector("#txtSoGioLam").value;
-        nhanVien.luongCoBan = document.querySelector("#txtLuongCoBan").value;
+  var nhanVien = new NhanVien();
+  nhanVien.maNhanVien = document.querySelector("#txtMaNhanVien").value;
+  nhanVien.tenNhanVien = document.querySelector("#txtTenNhanVien").value;
+  nhanVien.heSoChucVu = document.querySelector("#chucVu").value;
+  nhanVien.soGioLamTrongThang = document.querySelector("#txtSoGioLam").value;
+  nhanVien.luongCoBan = document.querySelector("#txtLuongCoBan").value;
 
-        var arrOption = document.querySelector("#chucVu").options;
-        var slChucVu = document.querySelector("#chucVu");
-        nhanVien.chucVu = arrOption[slChucVu.selectedIndex].innerHTML;
+  var arrOption = document.querySelector("#chucVu").options;
+  var slChucVu = document.querySelector("#chucVu");
+  nhanVien.chucVu = arrOption[slChucVu.selectedIndex].innerHTML;
 
-        kiemTra();
+  kiemTra();
 
-        var promise = axios({
-            url: "http://svcy.myclass.vn/api/QuanLyNhanVienApi/ThemNhanVien",
-            method: "POST",
-            data: nhanVien,
-            responseType: "json",
-        })
-        promise.then(function (result) {
-            console.log(result.data);
-            renderNhanVien();
-        });
+  var promise = axios({
+    url: "http://svcy.myclass.vn/api/QuanLyNhanVienApi/ThemNhanVien",
+    method: "POST",
+    data: nhanVien,
+    responseType: "json",
+  });
+  promise.then(function (result) {
+    console.log(result.data);
+    renderNhanVien();
+  });
 
-        promise.catch(function (error) {
-            console.log(error);
-        });
+  promise.catch(function (error) {
+    console.log(error);
+  });
 };
 
 window.xoaNhanVien = function (maNhanVien) {
